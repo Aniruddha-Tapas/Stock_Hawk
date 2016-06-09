@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.myapps.stockhawk">
+
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <permission
+        android:name="com.google.android.gcm.demo.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.google.android.gcm.demo.permission.C2D_MESSAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:vmSafeMode="true"
+        android:name=".service.AppController"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name="com.myapps.stockhawk.ui.MyStocksActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name=".ui.StockDetails"
+            android:label="@string/app_name"
+            android:parentActivityName=".ui.MyStocksActivity"
+            >
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MyStocksActivity"/>
+
+        </activity>
+
+
+        <!-- Application's widget! -->
+        <receiver android:name=".widget.StockWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/stock_widget_provider_info"/>
+        </receiver>
+
+        <service android:name=".widget.StockWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+        <!-- Task Service for GCM -->
+        <service
+            android:name="com.myapps.stockhawk.service.StockTaskService"
+            android:exported="true"
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+            <intent-filter>
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
+            </intent-filter>
+        </service>
+        <service android:name="com.myapps.stockhawk.service.StockIntentService" />
+
+        <!-- Broadcast for invalid stock symbols! -->
+        <receiver android:name=".service.NoStockFoundBroadcast">
+            <intent-filter>
+                <action android:name="com.myapps.stockhawk.ui.MyStocksActivity.STOCK_NOT_FOUND"></action>
+            </intent-filter>
+        </receiver>
+
+        <!-- Content Provider -->
+        <provider
+            android:name="com.myapps.stockhawk.data.generated.QuoteProvider"
+            android:authorities="com.myapps.stockhawk.data.QuoteProvider"
+            android:exported="true" />
+    </application>
+
+</manifest>
